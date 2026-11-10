@@ -1,20 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 
-const INTRO_SRC = '/videos/intro.mov'
+const INTRO_SRC = '/videos/intro.webm'
 const HERO_SRC = '/videos/hero.mp4'
 const HERO_START_SECONDS = 3
 
-// ProRes 4444 (with alpha) only decodes in browsers that support it natively, such as Safari.
-function canPlayProResIntro() {
+function canPlayAlphaIntro() {
   const probe = document.createElement('video')
-  return probe.canPlayType('video/quicktime; codecs="ap4h"') !== ''
+  return probe.canPlayType('video/webm; codecs="vp9"') !== ''
 }
 
 export default function App() {
   const introRef = useRef(null)
   const heroRef = useRef(null)
   const heroStartedRef = useRef(false)
-  const [introVisible, setIntroVisible] = useState(canPlayProResIntro)
+  const [introVisible, setIntroVisible] = useState(canPlayAlphaIntro)
   const [heroStarted, setHeroStarted] = useState(false)
 
   const startHero = () => {

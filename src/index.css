@@ -46,7 +46,7 @@ body,
   display: flex;
   align-items: center;
   gap: clamp(2.5rem, 3vw, 4rem);
-  padding-left: 16%;
+  padding-left: 8%;
   padding-right: 5%;
 }
 

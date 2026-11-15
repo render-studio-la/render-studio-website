@@ -65,8 +65,8 @@ void main() {
 
   float distanceToContour = abs(fract(field * 5.2) - 0.5);
   float contour = 1.0 - smoothstep(0.0, 0.022, distanceToContour);
-  vec3 background = vec3(0.953, 0.941, 0.914);
-  vec3 lineColor = vec3(0.31, 0.51, 0.59);
+  vec3 background = vec3(0.043, 0.059, 0.063);
+  vec3 lineColor = vec3(0.373, 0.573, 0.647);
   vec3 color = mix(background, lineColor, contour * 0.2);
 
   gl_FragColor = vec4(color, 1.0);

@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react'
 
 const PHOTO_START = 0.5
 const PHOTO_SPAN = 0.5
+const TEXT_DELAY = 0.18
+const TEXT_EASE = 3.4
 
 function clamp01(value) {
   return Math.min(Math.max(value, 0), 1)
@@ -33,13 +35,15 @@ export default function About() {
 
       const count = lineEls.length
       if (count > 0) {
-        const stagger = PHOTO_SPAN / (count + 1)
-        const lineSpan = PHOTO_SPAN - (count - 1) * stagger
+        const textStart = PHOTO_START + PHOTO_SPAN * TEXT_DELAY
+        const textSpan = PHOTO_START + PHOTO_SPAN - textStart
+        const stagger = textSpan / (count + 1)
+        const lineSpan = textSpan - (count - 1) * stagger
         lineEls.forEach((lineEl, index) => {
           const lineP = clamp01(
-            (progress - (PHOTO_START + index * stagger)) / lineSpan
+            (progress - (textStart + index * stagger)) / lineSpan
           )
-          const eased = lineP ** 2.2
+          const eased = lineP ** TEXT_EASE
           lineEl.style.clipPath = `inset(0 ${(1 - eased) * 100}% 0 0)`
         })
       }

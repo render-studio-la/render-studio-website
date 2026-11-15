@@ -47,7 +47,7 @@ float fbm(vec2 point) {
 void main() {
   vec2 uv = v_uv - 0.5;
   uv.x *= u_resolution.x / u_resolution.y;
-  float time = u_time * 0.065 * u_motion;
+  float time = u_time * 0.13 * u_motion;
 
   vec2 pointer = u_pointer - 0.5;
   pointer.x *= u_resolution.x / u_resolution.y;

@@ -3,27 +3,29 @@
 ## Product intent & audience
 
 - Website featuring a cinematic intro-to-hero video sequence as the landing experience.
-- Additional sections are planned below the hero (content not yet defined).
+- An **About** section exists below the hero; additional sections may follow.
 
 ## Brand personality & voice
 
-- Not yet inferred from available context.
+- Bold, confident visual presence (extra-bold typography in About section).
 
 ## Visual design & UX direction
 
 - Hero/intro video fills the initial viewport at `100vh`; intro animation and video playback timing are established and must remain unchanged.
 - Animated topographic/contour background layer exists as a continuous, fixed background behind content.
-- Existing colors, typography, and overall design are finalized and treated as immutable unless explicitly requested.
+- **Typography:** Manrope font family. About section text set to weight **800** (extra bold).
+- Existing colors, spacing, highlights, and layout are treated as immutable unless explicitly requested.
 
 ## Decisions, constraints & rationale
 
-- **Scroll fix:** Root/document had `overflow: hidden` and hero wrapper was fixed to viewport, blocking vertical scroll. Removed those scroll locks and converted hero to a normal in-flow `100vh` section so document height grows and page scrolls.
-- **Background layer:** Contour/topographic background moved outside the hero viewport wrapper and kept `fixed` so it remains continuous as future sections are added below.
-- **Do-not-touch constraints:** Intro animation, video playback, timing, colors, typography, and existing design must not be modified. No new sections to be created during scroll fixes.
-- A reported contour-layer import error was stale (from a different running path); the layer exists and imports correctly in the active path.
+- **Scroll fix:** Removed root `overflow: hidden` and hero fixed-viewport wrapper; converted hero to a normal in-flow `100vh` section so the document scrolls.
+- **Background layer:** Contour/topographic background moved outside the hero wrapper and kept `fixed` for continuity across sections.
+- **Boldness increase:** About section text bumped to Manrope 800 (extra bold) at user request; size, color, spacing, highlights, and layout preserved.
+- **Do-not-touch constraints:** Intro animation, video playback, and timing must not be modified.
+- A previously reported contour-layer import error was stale; the layer imports correctly in the active path.
 - Production build passes successfully after changes.
 
 ## Open questions & assumptions
 
-- Content and layout of future sections below the hero are unknown; page structure must remain extensible.
-- No explicit `.bolt/prompt` authored yet; constraints above are inferred from this turn only.
+- Content and layout of any future sections beyond About are unknown; page structure must remain extensible.
+- No explicit `.bolt/prompt` authored yet; constraints are inferred from session history.

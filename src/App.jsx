@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import ContourBackground from './components/ContourBackground'
 
 const INTRO_SRC = '/videos/intro.webm'
 const HERO_SRC = '/videos/hero.mp4'
@@ -50,6 +51,7 @@ export default function App() {
 
   return (
     <main className="stage">
+      <ContourBackground />
       <video
         ref={heroRef}
         className={`layer layer--hero${heroStarted ? ' is-visible' : ''}`}

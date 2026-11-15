@@ -17,7 +17,65 @@ body,
 .stage {
   position: fixed;
   inset: 0;
+  z-index: 0;
+  overflow: hidden;
   background: #000;
+}
+
+.contour-background {
+  position: absolute;
+  inset: -5%;
+  z-index: 0;
+  width: 110%;
+  height: 110%;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+  color: #8fb8c2;
+}
+
+.contour-background__drift {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: contour-drift 46s ease-in-out infinite alternate;
+}
+
+.contour-field {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.28;
+}
+
+.contour-field--north {
+  opacity: 0.3;
+}
+
+.contour-field--south {
+  opacity: 0.24;
+}
+
+.contour-field--center {
+  opacity: 0.2;
+}
+
+@keyframes contour-drift {
+  0% {
+    transform: translate3d(-1.5%, -0.8%, 0) rotate(-0.35deg) scale(1.015);
+  }
+
+  100% {
+    transform: translate3d(1.5%, 0.8%, 0) rotate(0.35deg) scale(1.045);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contour-background__drift {
+    animation: none;
+  }
 }
 
 .layer {

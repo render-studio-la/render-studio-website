@@ -32,7 +32,7 @@ body,
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: #141a1c;
+  background: transparent;
   color: #dfe8e9;
 }
 

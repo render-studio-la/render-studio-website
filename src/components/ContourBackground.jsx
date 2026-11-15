@@ -67,7 +67,7 @@ void main() {
   field += fbm(warped * 2.35 + vec2(-time * 0.22, time * 0.28) + 3.7) * 0.2;
   field /= 1.2;
 
-  float distanceToContour = abs(fract(field * 11.7) - 0.5);
+  float distanceToContour = abs(fract(field * 9.75) - 0.5);
   float contourWidth = max(fwidth(field * 7.8) * 0.72, 0.0012);
   float contour = 1.0 - smoothstep(0.0, contourWidth, distanceToContour);
   vec3 background = vec3(0.043, 0.059, 0.063);

@@ -53,18 +53,21 @@ void main() {
   pointer.x *= u_resolution.x / u_resolution.y;
   float pointerInfluence = exp(-dot(uv - pointer * 0.72, uv - pointer * 0.72) * 4.0);
 
+  float flowAngle = (fbm(uv * 0.5 + vec2(time * 0.05, -time * 0.04) + 9.7) - 0.5) * 12.566;
+  vec2 flow = vec2(cos(flowAngle), sin(flowAngle));
+
   vec2 warped = uv;
   warped += 0.26 * vec2(
-    fbm(uv * 1.2 + vec2(time * 0.75, -time * 0.5)) - 0.5,
-    fbm(uv * 1.2 + vec2(-time * 0.45, time * 0.65) + 6.4) - 0.5
+    fbm(uv * 1.2 + flow * time * 0.55) - 0.5,
+    fbm(uv * 1.2 + flow * time * 0.55 + vec2(6.4, -4.1)) - 0.5
   );
   warped += pointerInfluence * pointer * 0.035 * u_motion;
 
-  float field = fbm(warped * 1.45 + vec2(time * 0.42, -time * 0.3));
+  float field = fbm(warped * 1.45 + flow * time * 0.45);
   field += fbm(warped * 2.35 + vec2(-time * 0.22, time * 0.28) + 3.7) * 0.2;
   field /= 1.2;
 
-  float distanceToContour = abs(fract(field * 7.8) - 0.5);
+  float distanceToContour = abs(fract(field * 11.7) - 0.5);
   float contourWidth = max(fwidth(field * 7.8) * 0.72, 0.0012);
   float contour = 1.0 - smoothstep(0.0, contourWidth, distanceToContour);
   vec3 background = vec3(0.043, 0.059, 0.063);

@@ -32,7 +32,7 @@ body,
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: rgba(20, 26, 28, 0.72);
+  background: #141a1c;
   color: #dfe8e9;
 }
 

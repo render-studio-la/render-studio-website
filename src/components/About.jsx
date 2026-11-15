@@ -10,6 +10,7 @@ function clamp01(value) {
 export default function About() {
   const sectionRef = useRef(null)
   const maskRef = useRef(null)
+  const textRef = useRef(null)
 
   useEffect(() => {
     const section = sectionRef.current
@@ -17,6 +18,10 @@ export default function About() {
 
     let locked = false
     let frame = 0
+
+    const lineEls = textRef.current
+      ? Array.from(textRef.current.querySelectorAll('.about-copy-line'))
+      : []
 
     const applyProgress = (progress) => {
       const photoProgress = clamp01((progress - PHOTO_START) / PHOTO_SPAN)
@@ -26,6 +31,18 @@ export default function About() {
         mask.style.clipPath = `inset(${(1 - photoP) * 100}% 0 0 0)`
       }
 
+      const count = lineEls.length
+      if (count > 0) {
+        const stagger = PHOTO_SPAN / (count + 1)
+        const lineSpan = PHOTO_SPAN - (count - 1) * stagger
+        lineEls.forEach((lineEl, index) => {
+          const lineP = clamp01(
+            (progress - (PHOTO_START + index * stagger)) / lineSpan
+          )
+          const eased = lineP ** 2.2
+          lineEl.style.clipPath = `inset(0 ${(1 - eased) * 100}% 0 0)`
+        })
+      }
     }
 
     const update = () => {
@@ -90,7 +107,7 @@ export default function About() {
             />
           </div>
         </figure>
-        <div className="about__text">
+        <div ref={textRef} className="about__text">
           {paragraphs.map((lines, paragraphIndex) => (
             <p key={paragraphIndex}>
               {lines.map((line, lineIndex) => (

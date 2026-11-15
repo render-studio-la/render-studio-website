@@ -108,6 +108,7 @@ body,
 .about-copy-line {
   display: block;
   white-space: nowrap;
+  clip-path: inset(0 100% 0 0);
 }
 
 .about-highlight {
@@ -147,6 +148,7 @@ body,
   .about-copy-line {
     display: inline;
     white-space: normal;
+    clip-path: none;
   }
 
   .about-copy-break {
@@ -160,6 +162,10 @@ body,
 
 @media (prefers-reduced-motion: reduce) {
   .about__photo-mask {
+    clip-path: none !important;
+  }
+
+  .about-copy-line {
     clip-path: none !important;
   }
 }

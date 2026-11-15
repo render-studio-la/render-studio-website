@@ -44,10 +44,11 @@ body,
 
 .about__inner {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  width: 100%;
+  height: 100%;
   gap: clamp(2.5rem, 3vw, 4rem);
-  padding-left: 3%;
-  padding-right: 5%;
+  padding: 0 5% 3vw 3%;
 }
 
 .about__media {
@@ -110,6 +111,9 @@ body,
 
   .about__inner {
     flex-direction: column;
+    align-items: center;
+    width: auto;
+    height: auto;
     padding: 0 1.5rem;
     text-align: center;
   }

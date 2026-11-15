@@ -34,9 +34,6 @@ export default function About() {
               loading="lazy"
             />
           </div>
-          <figcaption className="about__caption">
-            Gabriel Lira — Founder
-          </figcaption>
         </figure>
         <div className="about__text">
           <p>

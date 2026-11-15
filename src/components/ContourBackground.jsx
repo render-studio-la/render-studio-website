@@ -57,16 +57,19 @@ void main() {
   vec2 flow = vec2(cos(flowAngle), sin(flowAngle));
   vec2 crossFlow = vec2(-flow.y, flow.x);
 
+  vec2 primaryMotion = flow * sin(time * 0.55);
+  vec2 crossMotion = crossFlow * sin(time * 0.35);
+
   vec2 warped = uv;
   warped += 0.2 * vec2(
-    fbm(uv * 0.9 + flow * time * 0.55) - 0.5,
-    fbm(uv * 0.9 + flow * time * 0.55 + vec2(6.4, -4.1)) - 0.5
+    fbm(uv * 0.9 + primaryMotion) - 0.5,
+    fbm(uv * 0.9 + primaryMotion + vec2(6.4, -4.1)) - 0.5
   );
-  warped += crossFlow * (fbm(uv * 0.62 + crossFlow * time * 0.35 + 4.2) - 0.5) * 0.07;
+  warped += crossFlow * (fbm(uv * 0.62 + crossMotion + 4.2) - 0.5) * 0.07;
   warped += pointerInfluence * pointer * 0.035 * u_motion;
 
-  float field = fbm(warped * 1.05 + flow * time * 0.45);
-  field += fbm(warped * 1.65 + crossFlow * time * 0.28 + 3.7) * 0.12;
+  float field = fbm(warped * 1.05 + flow * sin(time * 0.45));
+  field += fbm(warped * 1.65 + crossFlow * sin(time * 0.28) + 3.7) * 0.12;
   field /= 1.12;
 
   float distanceToContour = abs(fract(field * 9.75) - 0.5);

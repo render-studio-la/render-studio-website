@@ -62,10 +62,10 @@ export default function About() {
       <>
         <span className="about-highlight">Gabriel Lira</span>, founder of{' '}
         <span className="about-highlight">Render Studio</span>, a{' '}
-        <span className="about-highlight">Los Angeles</span>-based{' '}
+        <span className="about-highlight">Los Angeles</span>{' '}
       </>,
       <>
-        <span className="about-highlight">creative</span> company specializing in video{' '}
+        based <span className="about-highlight">creative</span> company specializing in video{' '}
       </>,
       <>production, photography, and drone <span className="about-highlight">cinematography</span>.</>,
     ],

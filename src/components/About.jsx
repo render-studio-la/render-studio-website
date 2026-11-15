@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 
 export default function About() {
-  const photoRef = useRef(null)
+  const mediaRef = useRef(null)
   const [revealed, setRevealed] = useState(false)
 
   useEffect(() => {
-    const photo = photoRef.current
-    if (!photo) return undefined
+    const media = mediaRef.current
+    if (!media) return undefined
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -16,19 +16,18 @@ export default function About() {
           }
         })
       },
-      { threshold: 0.25 },
+      { threshold: 0.2 },
     )
-    observer.observe(photo)
+    observer.observe(media)
     return () => observer.disconnect()
   }, [])
 
   return (
     <section className="about" aria-label="About Render Studio">
       <div className="about__inner">
-        <figure className={`about__media${revealed ? ' is-revealed' : ''}`}>
+        <figure ref={mediaRef} className={`about__media${revealed ? ' is-revealed' : ''}`}>
           <div className="about__photo-mask">
             <img
-              ref={photoRef}
               className="about__photo"
               src="/images/about-gabriel.jpg"
               alt="Gabriel Lira working with a camera at Dodger Stadium"
@@ -40,7 +39,6 @@ export default function About() {
           </figcaption>
         </figure>
         <div className="about__text">
-          <h2 className="about__heading">About</h2>
           <p>
             Gabriel Lira, founder of Render Studio, a Los Angeles-based creative
             company specializing in video production, photography, and drone
@@ -51,7 +49,6 @@ export default function About() {
             life through creative cinematography and thoughtful, impactful
             post-production.
           </p>
-          <p className="about__signature">Render Studio</p>
         </div>
       </div>
     </section>

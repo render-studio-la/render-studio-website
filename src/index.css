@@ -87,47 +87,18 @@ body,
   transition: box-shadow 450ms ease;
 }
 
-.about__caption {
-  margin-top: 0.9rem;
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  opacity: 0;
-  transition: opacity 500ms ease 400ms;
-}
-
-.about__media.is-revealed .about__caption {
-  opacity: 0.6;
-}
-
 .about__text {
-  max-width: 480px;
-}
-
-.about__heading {
-  margin: 0 0 1.6rem;
-  font-size: 2.4rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  line-height: 1.1;
+  max-width: 640px;
+  flex: 1;
 }
 
 .about__text p {
-  margin: 0 0 1.15rem;
-  font-size: 1.02rem;
+  margin: 0 0 1.4rem;
+  font-size: 2.04rem;
   font-weight: 400;
-  line-height: 1.7;
-  letter-spacing: 0.01em;
+  line-height: 1.6;
+  letter-spacing: 0.005em;
   opacity: 0.85;
-}
-
-.about__signature {
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-size: 0.8rem !important;
-  opacity: 0.55 !important;
 }
 
 @media (max-width: 900px) {
@@ -147,6 +118,14 @@ body,
     width: min(340px, 80vw);
     height: auto;
     aspect-ratio: 340 / 428;
+  }
+
+  .about__text {
+    max-width: none;
+  }
+
+  .about__text p {
+    font-size: 1.5rem;
   }
 }
 

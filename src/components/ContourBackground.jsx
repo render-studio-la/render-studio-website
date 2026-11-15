@@ -49,10 +49,17 @@ float blobField(vec2 point, float time) {
   for (int index = 0; index < 11; index += 1) {
     float seed = float(index);
     float phase = hash(vec2(seed + 4.0, 12.8)) * 6.283;
-    vec2 anchor = vec2(
-      mix(-0.82, 0.82, hash(vec2(seed + 1.0, 3.1))),
-      mix(-0.46, 0.46, hash(vec2(seed + 2.0, 7.7)))
+    float column = mod(seed, 4.0);
+    float row = floor(seed / 4.0);
+    vec2 grid = vec2(
+      mix(-0.75, 0.75, column / 3.0),
+      mix(-0.4, 0.4, row / 2.0)
     );
+    vec2 jitter = vec2(
+      mix(-0.07, 0.07, hash(vec2(seed + 1.0, 3.1))),
+      mix(-0.06, 0.06, hash(vec2(seed + 2.0, 7.7)))
+    );
+    vec2 anchor = grid + jitter;
     vec2 position = anchor + vec2(
       sin(time * (0.38 + hash(vec2(seed + 5.0, 9.2)) * 0.22) + phase) * 0.14,
       cos(time * (0.32 + hash(vec2(seed + 6.0, 5.4)) * 0.2) + phase * 1.37) * 0.1
@@ -60,12 +67,24 @@ float blobField(vec2 point, float time) {
 
     float lifePhase = fract(time * (0.16 + hash(vec2(seed + 8.0, 2.4)) * 0.05) + phase / 6.283);
     float life = smoothstep(0.0, 0.16, lifePhase) * (1.0 - smoothstep(0.72, 1.0, lifePhase));
-    float radius = mix(0.16, 0.27, hash(vec2(seed + 9.0, 6.6)));
+    float radius = mix(0.14, 0.23, hash(vec2(seed + 9.0, 6.6)));
     radius *= 0.92 + 0.12 * sin(time * 0.42 + phase);
 
-    vec2 local = (point - position) / vec2(radius, radius * (0.76 + hash(vec2(seed + 10.0, 4.8)) * 0.3));
-    local += (fbm(point * 1.25 + vec2(seed * 3.7, seed * 2.1)) - 0.5) * vec2(0.18, 0.14);
-    float influence = exp(-dot(local, local) * 1.45);
+    float aspect = mix(0.78, 1.28, hash(vec2(seed + 10.0, 4.8)));
+    float rotation = (hash(vec2(seed + 12.0, 1.8)) - 0.5) * 1.6;
+    vec2 delta = point - position;
+    vec2 rotated = vec2(
+      delta.x * cos(rotation) - delta.y * sin(rotation),
+      delta.x * sin(rotation) + delta.y * cos(rotation)
+    );
+    vec2 local = rotated / vec2(radius * aspect, radius * (1.5 - aspect * 0.35));
+    local += vec2(
+      (fbm(point * 1.25 + vec2(seed * 3.7, seed * 2.1)) - 0.5) * 0.26,
+      (fbm(point * 1.9 + vec2(seed * 2.4, seed * 4.3)) - 0.5) * 0.18
+    );
+    local.x += sin(local.y * 2.1 + phase) * 0.11;
+    local.y += sin(local.x * 1.8 - phase * 0.7) * 0.08;
+    float influence = exp(-dot(local, local) * 1.6);
     value += influence * life * (0.76 + hash(vec2(seed + 11.0, 8.1)) * 0.28);
   }
   return value;
@@ -85,7 +104,7 @@ void main() {
   field += max(fbm(warped * 0.72 + vec2(sin(time * 0.24), cos(time * 0.19))) - 0.52, 0.0) * 0.16;
   field /= 1.12;
 
-  float distanceToContour = abs(fract(field * 9.75) - 0.5);
+  float distanceToContour = abs(fract(field * 7.3) - 0.5);
   float contourWidth = max(fwidth(field * 7.8) * 0.72, 0.0012);
   float contour = 1.0 - smoothstep(0.0, contourWidth, distanceToContour);
   vec3 background = vec3(0.043, 0.059, 0.063);

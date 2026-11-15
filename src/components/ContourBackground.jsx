@@ -161,7 +161,7 @@ function prefersReducedMotion() {
     : false
 }
 
-export default function ContourBackground() {
+export default function ContourBackground({ visible = true }) {
   const canvasRef = useRef(null)
   const [motionEnabled, setMotionEnabled] = useState(() => !prefersReducedMotion())
   const [webglFailed, setWebglFailed] = useState(false)
@@ -277,9 +277,13 @@ export default function ContourBackground() {
 
   return (
     <>
-      <canvas ref={canvasRef} className="contour-background contour-background--canvas" aria-hidden="true" />
+      <canvas
+        ref={canvasRef}
+        className={`contour-background contour-background--canvas${visible ? '' : ' contour-background--hidden'}`}
+        aria-hidden="true"
+      />
       <svg
-        className={`contour-background contour-background--fallback${webglFailed ? ' is-visible' : ''}`}
+        className={`contour-background contour-background--fallback${webglFailed ? ' is-visible' : ''}${visible ? '' : ' contour-background--hidden'}`}
       viewBox="0 0 1600 1100"
       preserveAspectRatio="xMidYMid slice"
       aria-hidden="true"
@@ -307,6 +311,7 @@ export default function ContourBackground() {
         ))}
       </g>
       </svg>
+      <style>{`.contour-background--hidden { opacity: 0 !important; transition: none; }`}</style>
     </>
   )
 }

@@ -16,6 +16,7 @@ export default function App() {
   const heroRef = useRef(null)
   const heroStartedRef = useRef(false)
   const [introVisible, setIntroVisible] = useState(canPlayAlphaIntro)
+  const [introPlaying, setIntroPlaying] = useState(false)
   const [heroStarted, setHeroStarted] = useState(false)
   const [heroSrc, setHeroSrc] = useState(HERO_SRC)
 
@@ -76,7 +77,7 @@ export default function App() {
 
   return (
     <>
-      <ContourBackground />
+      <ContourBackground visible={!introVisible || introPlaying} />
       <div className="scroll-stage">
         <main className="stage">
         <video
@@ -97,6 +98,7 @@ export default function App() {
             src={INTRO_SRC}
             muted
             autoPlay
+            onPlaying={() => setIntroPlaying(true)}
             playsInline
             preload="auto"
             disablePictureInPicture

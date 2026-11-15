@@ -35,7 +35,7 @@ export default function About() {
             />
           </div>
         </figure>
-        <div className="about__text">
+        <div className={`about__text${revealed ? ' is-revealed' : ''}`}>
           <p>
             Gabriel Lira, founder of Render Studio, a Los Angeles-based creative
             company specializing in video production, photography, and drone

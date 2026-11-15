@@ -57,9 +57,17 @@ export default function About() {
     }
   }, [])
 
-  const lines = [
-    'Gabriel Lira, founder of Render Studio, a Los Angeles-based creative company specializing in video production, photography, and drone cinematography.',
-    'With a focus on visual storytelling, Render Studio brings ideas to life through creative cinematography and thoughtful, impactful post-production.',
+  const paragraphs = [
+    [
+      'Gabriel Lira, founder of Render Studio, a ',
+      'Los Angeles-based creative company specializing ',
+      'in video production, photography, and drone cinematography.',
+    ],
+    [
+      'With a focus on visual storytelling, Render Studio ',
+      'brings ideas to life through creative cinematography ',
+      'and thoughtful, impactful post-production.',
+    ],
   ]
 
   return (
@@ -76,8 +84,15 @@ export default function About() {
           </div>
         </figure>
         <div className="about__text">
-          {lines.map((text, index) => (
-            <p key={index}>{text}</p>
+          {paragraphs.map((lines, paragraphIndex) => (
+            <p key={paragraphIndex}>
+              {lines.map((line, lineIndex) => (
+                <span className="about-copy-line" key={line}>
+                  {line}
+                  {lineIndex < lines.length - 1 && <br className="about-copy-break" />}
+                </span>
+              ))}
+            </p>
           ))}
         </div>
       </div>

@@ -88,18 +88,23 @@ body,
 }
 
 .about__text {
-  width: min(600px, 100%);
-  max-width: 600px;
-  flex: 0 1 600px;
+  width: 840px;
+  max-width: 840px;
+  flex: 0 0 840px;
 }
 
 .about__text p {
   position: relative;
   margin: 0 0 1.4rem;
-  font-size: 2.04rem;
+  font-size: 2.2rem;
   font-weight: 700;
-  line-height: 1.45;
+  line-height: 1.3;
   letter-spacing: -0.015em;
+}
+
+.about-copy-line {
+  display: block;
+  white-space: nowrap;
 }
 
 @media (max-width: 900px) {
@@ -125,7 +130,18 @@ body,
   }
 
   .about__text {
+    width: auto;
     max-width: none;
+    flex: none;
+  }
+
+  .about-copy-line {
+    display: inline;
+    white-space: normal;
+  }
+
+  .about-copy-break {
+    display: none;
   }
 
   .about__text p {

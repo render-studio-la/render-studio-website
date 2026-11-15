@@ -18,6 +18,8 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform vec2 u_pointer;
 uniform float u_motion;
+uniform vec4 u_trail[12];
+uniform float u_trail_strength[12];
 varying vec2 v_uv;
 
 float hash(vec2 point) {
@@ -52,6 +54,27 @@ void main() {
   vec2 pointer = u_pointer - 0.5;
   pointer.x *= u_resolution.x / u_resolution.y;
   float pointerInfluence = exp(-dot(uv - pointer * 0.72, uv - pointer * 0.72) * 4.0);
+  vec2 wakeDisplacement = vec2(0.0);
+
+  for (int trailIndex = 0; trailIndex < 12; trailIndex += 1) {
+    vec4 trailSample = u_trail[trailIndex];
+    vec2 trailPoint = trailSample.xy - 0.5;
+    trailPoint.x *= u_resolution.x / u_resolution.y;
+    vec2 direction = trailSample.zw;
+    float directionLength = max(length(direction), 0.001);
+    direction /= directionLength;
+    direction.x *= u_resolution.x / u_resolution.y;
+    direction = normalize(direction);
+    vec2 normal = vec2(-direction.y, direction.x);
+    vec2 offset = uv - trailPoint;
+    float along = dot(offset, direction);
+    float lateral = dot(offset, normal);
+    float wakeWidth = exp(-lateral * lateral * 120.0);
+    float wakeLength = exp(-max(along, 0.0) * 30.0 - max(-along, 0.0) * 4.0);
+    float wake = wakeWidth * wakeLength * u_trail_strength[trailIndex] * u_motion;
+    wakeDisplacement += normal * tanh(lateral * 20.0) * wake * 0.045;
+    wakeDisplacement += direction * wake * 0.008;
+  }
 
   vec2 warped = uv;
   warped += 0.26 * vec2(
@@ -59,6 +82,7 @@ void main() {
     fbm(uv * 1.2 + vec2(-time * 0.45, time * 0.65) + 6.4) - 0.5
   );
   warped += pointerInfluence * pointer * 0.035 * u_motion;
+  warped += wakeDisplacement;
 
   float field = fbm(warped * 1.45 + vec2(time * 0.42, -time * 0.3));
   field += fbm(warped * 2.35 + vec2(-time * 0.22, time * 0.28) + 3.7) * 0.2;
@@ -219,7 +243,9 @@ export default function ContourBackground() {
     const time = gl.getUniformLocation(program, 'u_time')
     const pointer = gl.getUniformLocation(program, 'u_pointer')
     const motion = gl.getUniformLocation(program, 'u_motion')
-    if (!buffer || position < 0 || !resolution || !time || !pointer || !motion) {
+    const trail = gl.getUniformLocation(program, 'u_trail[0]')
+    const trailStrength = gl.getUniformLocation(program, 'u_trail_strength[0]')
+    if (!buffer || position < 0 || !resolution || !time || !pointer || !motion || !trail || !trailStrength) {
       setWebglFailed(true)
       return undefined
     }
@@ -236,6 +262,9 @@ export default function ContourBackground() {
 
     const targetPointer = { x: 0.5, y: 0.5 }
     const currentPointer = { x: 0.5, y: 0.5 }
+    const trailData = new Float32Array(12 * 4)
+    const trailStrengthData = new Float32Array(12)
+    const lastTrailSample = { x: 0.5, y: 0.5, time: performance.now() }
     const resize = () => {
       const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5)
       canvas.width = Math.floor(window.innerWidth * pixelRatio)
@@ -243,18 +272,47 @@ export default function ContourBackground() {
       gl.viewport(0, 0, canvas.width, canvas.height)
     }
     const updatePointer = (event) => {
-      targetPointer.x = event.clientX / window.innerWidth
-      targetPointer.y = 1 - event.clientY / window.innerHeight
+      const nextX = event.clientX / window.innerWidth
+      const nextY = 1 - event.clientY / window.innerHeight
+      const elapsed = Math.max((performance.now() - lastTrailSample.time) / 1000, 1 / 120)
+      const deltaX = nextX - lastTrailSample.x
+      const deltaY = nextY - lastTrailSample.y
+      const distance = Math.hypot(deltaX, deltaY)
+      targetPointer.x = nextX
+      targetPointer.y = nextY
+      if (distance < 0.001) return
+
+      for (let index = 11; index > 0; index -= 1) {
+        trailData.set(trailData.subarray((index - 1) * 4, index * 4), index * 4)
+        trailStrengthData[index] = trailStrengthData[index - 1]
+      }
+      trailData[0] = nextX
+      trailData[1] = nextY
+      trailData[2] = deltaX / distance
+      trailData[3] = deltaY / distance
+      trailStrengthData[0] = Math.min(1, (distance / elapsed) * 2.4)
+      lastTrailSample.x = nextX
+      lastTrailSample.y = nextY
+      lastTrailSample.time = performance.now()
     }
     const startTime = performance.now()
+    let previousFrameTime = startTime
     let frame = 0
     const render = (now) => {
+      const frameDelta = Math.min((now - previousFrameTime) / 1000, 0.1)
+      const trailDecay = Math.exp(-frameDelta * 2.8)
+      for (let index = 0; index < trailStrengthData.length; index += 1) {
+        trailStrengthData[index] *= trailDecay
+      }
+      previousFrameTime = now
       currentPointer.x += (targetPointer.x - currentPointer.x) * 0.035
       currentPointer.y += (targetPointer.y - currentPointer.y) * 0.035
       gl.uniform2f(resolution, canvas.width, canvas.height)
       gl.uniform1f(time, (now - startTime) / 1000)
       gl.uniform2f(pointer, currentPointer.x, currentPointer.y)
       gl.uniform1f(motion, motionEnabled ? 1 : 0)
+      gl.uniform4fv(trail, trailData)
+      gl.uniform1fv(trailStrength, trailStrengthData)
       gl.drawArrays(gl.TRIANGLES, 0, 6)
       if (motionEnabled) frame = requestAnimationFrame(render)
     }

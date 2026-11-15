@@ -10,7 +10,7 @@ body,
   margin: 0;
   width: 100%;
   min-height: 100%;
-  background: #000;
+  background: #0b0f10;
   overflow-x: hidden;
 }
 
@@ -32,7 +32,7 @@ body,
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: rgba(30, 34, 35, 0.72);
+  background: rgba(20, 26, 28, 0.72);
   color: #dfe8e9;
 }
 
@@ -53,13 +53,7 @@ body,
   display: block;
   overflow: visible;
   pointer-events: none;
-  color: #8fb8c2;
-}
-
-.contour-background__drift {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: contour-drift 46s ease-in-out infinite alternate;
+  color: #5f92a5;
 }
 
 .contour-field {
@@ -69,35 +63,19 @@ body,
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
-  opacity: 0.28;
+  opacity: 0.46;
 }
 
 .contour-field--north {
-  opacity: 0.3;
+  opacity: 0.5;
 }
 
 .contour-field--south {
-  opacity: 0.24;
+  opacity: 0.4;
 }
 
 .contour-field--center {
-  opacity: 0.2;
-}
-
-@keyframes contour-drift {
-  0% {
-    transform: translate3d(-1.5%, -0.8%, 0) rotate(-0.35deg) scale(1.015);
-  }
-
-  100% {
-    transform: translate3d(1.5%, 0.8%, 0) rotate(0.35deg) scale(1.045);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .contour-background__drift {
-    animation: none;
-  }
+  opacity: 0.34;
 }
 
 .layer {

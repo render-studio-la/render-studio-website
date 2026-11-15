@@ -50,32 +50,34 @@ export default function App() {
   }
 
   return (
-    <main className="stage">
+    <>
       <ContourBackground />
-      <video
-        ref={heroRef}
-        className={`layer layer--hero${heroStarted ? ' is-visible' : ''}`}
-        src={HERO_SRC}
-        muted
-        loop
-        playsInline
-        preload="auto"
-        disablePictureInPicture
-      />
-      {introVisible && (
+      <main className="stage">
         <video
-          ref={introRef}
-          className="layer layer--intro"
-          src={INTRO_SRC}
+          ref={heroRef}
+          className={`layer layer--hero${heroStarted ? ' is-visible' : ''}`}
+          src={HERO_SRC}
           muted
-          autoPlay
+          loop
           playsInline
           preload="auto"
           disablePictureInPicture
-          onEnded={removeIntro}
-          onError={removeIntro}
         />
-      )}
-    </main>
+        {introVisible && (
+          <video
+            ref={introRef}
+            className="layer layer--intro"
+            src={INTRO_SRC}
+            muted
+            autoPlay
+            playsInline
+            preload="auto"
+            disablePictureInPicture
+            onEnded={removeIntro}
+            onError={removeIntro}
+          />
+        )}
+      </main>
+    </>
   )
 }

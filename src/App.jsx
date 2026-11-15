@@ -78,6 +78,9 @@ export default function App() {
           />
         )}
       </main>
+      <section className="background-test" aria-label="Background test">
+        <h2>BACKGROUND TEST</h2>
+      </section>
     </>
   )
 }

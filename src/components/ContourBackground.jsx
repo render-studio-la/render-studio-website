@@ -46,14 +46,14 @@ float fbm(vec2 point) {
 void main() {
   vec2 uv = v_uv - 0.5;
   uv.x *= u_resolution.x / u_resolution.y;
-  float time = u_time * 0.018 * u_motion;
+  float time = u_time * 0.025 * u_motion;
 
   vec2 pointer = u_pointer - 0.5;
   pointer.x *= u_resolution.x / u_resolution.y;
   float pointerInfluence = exp(-dot(uv - pointer * 0.72, uv - pointer * 0.72) * 4.0);
 
   vec2 warped = uv;
-  warped += 0.22 * vec2(
+  warped += 0.26 * vec2(
     fbm(uv * 1.2 + vec2(time * 0.75, -time * 0.5)) - 0.5,
     fbm(uv * 1.2 + vec2(-time * 0.45, time * 0.65) + 6.4) - 0.5
   );
@@ -63,8 +63,8 @@ void main() {
   field += fbm(warped * 2.35 + vec2(-time * 0.22, time * 0.28) + 3.7) * 0.2;
   field /= 1.2;
 
-  float distanceToContour = abs(fract(field * 5.2) - 0.5);
-  float contour = 1.0 - smoothstep(0.0, 0.022, distanceToContour);
+  float distanceToContour = abs(fract(field * 7.8) - 0.5);
+  float contour = 1.0 - smoothstep(0.0, 0.011, distanceToContour);
   vec3 background = vec3(0.043, 0.059, 0.063);
   vec3 lineColor = vec3(0.373, 0.573, 0.647);
   vec3 color = mix(background, lineColor, contour * 0.2);

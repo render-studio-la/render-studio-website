@@ -35,13 +35,13 @@ float noise(vec2 point) {
 
 float fbm(vec2 point) {
   float value = 0.0;
-  float amplitude = 0.5;
-  for (int octave = 0; octave < 3; octave += 1) {
+  float amplitude = 0.64;
+  for (int octave = 0; octave < 2; octave += 1) {
     value += noise(point) * amplitude;
-    point = point * 2.02 + vec2(17.3, 9.1);
-    amplitude *= 0.5;
+    point = point * 1.85 + vec2(17.3, 9.1);
+    amplitude *= 0.36;
   }
-  return value;
+  return value / 0.8704;
 }
 
 void main() {

@@ -16,6 +16,7 @@ export default function App() {
   const heroStartedRef = useRef(false)
   const [introVisible, setIntroVisible] = useState(canPlayAlphaIntro)
   const [heroStarted, setHeroStarted] = useState(false)
+  const [heroSrc, setHeroSrc] = useState(HERO_SRC)
 
   const startHero = () => {
     const hero = heroRef.current
@@ -56,9 +57,10 @@ export default function App() {
         <video
           ref={heroRef}
           className={`layer layer--hero${heroStarted ? ' is-visible' : ''}`}
-          src={HERO_SRC}
+          src={heroSrc}
           muted
           loop
+          onError={() => setHeroSrc(INTRO_SRC)}
           playsInline
           preload="auto"
           disablePictureInPicture

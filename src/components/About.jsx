@@ -2,10 +2,10 @@ import { useEffect, useRef } from 'react'
 
 const PHOTO_START = 0.5
 const PHOTO_SPAN = 0.5
-const PHOTO_DURATION = 1.2
+const PHOTO_DURATION = 0.8
 const PHOTO_EASE = 2.6
 const TEXT_DELAY = 0.41
-const TEXT_DURATION = 1.2
+const TEXT_DURATION = 0.8
 const TEXT_EASE = 3.4
 const TEXT_STAGGER = 0.09
 

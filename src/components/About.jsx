@@ -2,8 +2,8 @@ import { useEffect, useRef } from 'react'
 
 const BLUE = '#437FA7'
 const PHOTO_SPAN = 0.6
-const LINE_START = [0.45, 0.62]
-const LINE_DURATION = 0.32
+const LINE_START = [0.58, 0.75]
+const LINE_DURATION = 0.3
 
 function clamp01(value) {
   return Math.min(Math.max(value, 0), 1)
@@ -25,7 +25,7 @@ export default function About() {
       const photoP = clamp01(progress / PHOTO_SPAN)
       const mask = maskRef.current
       if (mask) {
-        mask.style.clipPath = `inset(0 0 ${(1 - photoP) * 100}% 0)`
+        mask.style.clipPath = `inset(${(1 - photoP) * 100}% 0 0 0)`
       }
 
       lineRefs.current.forEach((line, index) => {
@@ -45,8 +45,10 @@ export default function About() {
       frame = 0
       const rect = section.getBoundingClientRect()
       const vh = window.innerHeight
-      const denominator = rect.height - vh * 0.1
-      let progress = denominator > 0 ? (vh * 0.9 - rect.top) / denominator : 1
+      const startOffset = vh * 0.7
+      const denominator = rect.height - vh * 0.35
+      let progress =
+        denominator > 0 ? (startOffset - rect.top) / denominator : 1
       progress = clamp01(progress)
 
       if (locked && progress < 1) progress = 1

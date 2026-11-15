@@ -70,17 +70,25 @@ const contourGroups = [
 ]
 
 function prefersReducedMotion() {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false
 }
 
 export default function ContourBackground() {
   const [motionEnabled, setMotionEnabled] = useState(() => !prefersReducedMotion())
 
   useEffect(() => {
+    if (typeof window.matchMedia !== 'function') return undefined
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     const updateMotionPreference = () => setMotionEnabled(!mediaQuery.matches)
-    mediaQuery.addEventListener('change', updateMotionPreference)
-    return () => mediaQuery.removeEventListener('change', updateMotionPreference)
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', updateMotionPreference)
+      return () => mediaQuery.removeEventListener('change', updateMotionPreference)
+    }
+    if (typeof mediaQuery.addListener !== 'function') return undefined
+    mediaQuery.addListener(updateMotionPreference)
+    return () => mediaQuery.removeListener(updateMotionPreference)
   }, [])
 
   return (

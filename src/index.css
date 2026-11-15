@@ -10,7 +10,7 @@ body,
   margin: 0;
   width: 100%;
   min-height: 100%;
-  background: #0b0f10;
+  background: #f3f0e9;
   overflow-x: hidden;
 }
 
@@ -32,8 +32,8 @@ body,
   min-height: 100vh;
   display: grid;
   place-items: center;
-  background: rgba(20, 26, 28, 0.72);
-  color: #dfe8e9;
+  background: rgba(247, 244, 238, 0.58);
+  color: #314c57;
 }
 
 .background-test h2 {
@@ -53,29 +53,29 @@ body,
   display: block;
   overflow: visible;
   pointer-events: none;
-  color: #5f92a5;
+  color: #4f8296;
 }
 
 .contour-field {
   fill: none;
   stroke: currentColor;
-  stroke-width: 1.15;
+  stroke-width: 0.95;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
-  opacity: 0.46;
+  opacity: 0.32;
 }
 
 .contour-field--north {
-  opacity: 0.5;
+  opacity: 0.38;
 }
 
 .contour-field--south {
-  opacity: 0.4;
+  opacity: 0.3;
 }
 
 .contour-field--center {
-  opacity: 0.34;
+  opacity: 0.25;
 }
 
 .layer {

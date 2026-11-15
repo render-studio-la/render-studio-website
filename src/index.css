@@ -107,6 +107,7 @@ body,
 
 .about-copy-line {
   display: block;
+  width: max-content;
   white-space: nowrap;
   clip-path: inset(0 100% 0 0);
 }

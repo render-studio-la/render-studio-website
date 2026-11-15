@@ -11,6 +11,7 @@ void main() {
 `
 
 const fragmentShaderSource = `
+#extension GL_OES_standard_derivatives : enable
 precision highp float;
 
 uniform vec2 u_resolution;
@@ -46,7 +47,7 @@ float fbm(vec2 point) {
 void main() {
   vec2 uv = v_uv - 0.5;
   uv.x *= u_resolution.x / u_resolution.y;
-  float time = u_time * 0.025 * u_motion;
+  float time = u_time * 0.065 * u_motion;
 
   vec2 pointer = u_pointer - 0.5;
   pointer.x *= u_resolution.x / u_resolution.y;
@@ -64,7 +65,8 @@ void main() {
   field /= 1.2;
 
   float distanceToContour = abs(fract(field * 7.8) - 0.5);
-  float contour = 1.0 - smoothstep(0.0, 0.011, distanceToContour);
+  float contourWidth = max(fwidth(field * 7.8) * 0.72, 0.0012);
+  float contour = 1.0 - smoothstep(0.0, contourWidth, distanceToContour);
   vec3 background = vec3(0.043, 0.059, 0.063);
   vec3 lineColor = vec3(0.373, 0.573, 0.647);
   vec3 color = mix(background, lineColor, contour * 0.2);
@@ -186,7 +188,7 @@ export default function ContourBackground() {
       antialias: false,
       powerPreference: 'low-power',
     })
-    if (!gl) {
+    if (!gl || !gl.getExtension('OES_standard_derivatives')) {
       setWebglFailed(true)
       return undefined
     }

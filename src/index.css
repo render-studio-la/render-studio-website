@@ -56,6 +56,14 @@ body,
   color: #4f8296;
 }
 
+.contour-background--fallback {
+  display: none;
+}
+
+.contour-background--fallback.is-visible {
+  display: block;
+}
+
 .contour-field {
   fill: none;
   stroke: currentColor;

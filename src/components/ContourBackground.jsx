@@ -1,4 +1,89 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
+const vertexShaderSource = `
+attribute vec2 a_position;
+varying vec2 v_uv;
+
+void main() {
+  v_uv = a_position * 0.5 + 0.5;
+  gl_Position = vec4(a_position, 0.0, 1.0);
+}
+`
+
+const fragmentShaderSource = `
+precision highp float;
+
+uniform vec2 u_resolution;
+uniform float u_time;
+uniform vec2 u_pointer;
+uniform float u_motion;
+varying vec2 v_uv;
+
+float hash(vec2 point) {
+  return fract(sin(dot(point, vec2(127.1, 311.7))) * 43758.5453123);
+}
+
+float noise(vec2 point) {
+  vec2 cell = floor(point);
+  vec2 local = fract(point);
+  local = local * local * (3.0 - 2.0 * local);
+  float bottom = mix(hash(cell), hash(cell + vec2(1.0, 0.0)), local.x);
+  float top = mix(hash(cell + vec2(0.0, 1.0)), hash(cell + vec2(1.0, 1.0)), local.x);
+  return mix(bottom, top, local.y);
+}
+
+float fbm(vec2 point) {
+  float value = 0.0;
+  float amplitude = 0.5;
+  for (int octave = 0; octave < 3; octave += 1) {
+    value += noise(point) * amplitude;
+    point = point * 2.02 + vec2(17.3, 9.1);
+    amplitude *= 0.5;
+  }
+  return value;
+}
+
+void main() {
+  vec2 uv = v_uv - 0.5;
+  uv.x *= u_resolution.x / u_resolution.y;
+  float time = u_time * 0.018 * u_motion;
+
+  vec2 pointer = u_pointer - 0.5;
+  pointer.x *= u_resolution.x / u_resolution.y;
+  float pointerInfluence = exp(-dot(uv - pointer * 0.72, uv - pointer * 0.72) * 4.0);
+
+  vec2 warped = uv;
+  warped += 0.22 * vec2(
+    fbm(uv * 1.2 + vec2(time * 0.75, -time * 0.5)) - 0.5,
+    fbm(uv * 1.2 + vec2(-time * 0.45, time * 0.65) + 6.4) - 0.5
+  );
+  warped += pointerInfluence * pointer * 0.035 * u_motion;
+
+  float field = fbm(warped * 1.45 + vec2(time * 0.42, -time * 0.3));
+  field += fbm(warped * 2.35 + vec2(-time * 0.22, time * 0.28) + 3.7) * 0.2;
+  field /= 1.2;
+
+  float distanceToContour = abs(fract(field * 5.2) - 0.5);
+  float contour = 1.0 - smoothstep(0.0, 0.022, distanceToContour);
+  vec3 background = vec3(0.953, 0.941, 0.914);
+  vec3 lineColor = vec3(0.31, 0.51, 0.59);
+  vec3 color = mix(background, lineColor, contour * 0.2);
+
+  gl_FragColor = vec4(color, 1.0);
+}
+`
+
+function compileShader(gl, type, source) {
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    gl.deleteShader(shader)
+    return null
+  }
+  return shader
+}
 
 const contourGroups = [
   {
@@ -76,7 +161,9 @@ function prefersReducedMotion() {
 }
 
 export default function ContourBackground() {
+  const canvasRef = useRef(null)
   const [motionEnabled, setMotionEnabled] = useState(() => !prefersReducedMotion())
+  const [webglFailed, setWebglFailed] = useState(false)
 
   useEffect(() => {
     if (typeof window.matchMedia !== 'function') return undefined
@@ -91,9 +178,107 @@ export default function ContourBackground() {
     return () => mediaQuery.removeListener(updateMotionPreference)
   }, [])
 
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return undefined
+    const gl = canvas.getContext('webgl', {
+      alpha: false,
+      antialias: false,
+      powerPreference: 'low-power',
+    })
+    if (!gl) {
+      setWebglFailed(true)
+      return undefined
+    }
+
+    const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSource)
+    const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource)
+    if (!vertexShader || !fragmentShader) {
+      setWebglFailed(true)
+      return undefined
+    }
+
+    const program = gl.createProgram()
+    if (!program) {
+      setWebglFailed(true)
+      return undefined
+    }
+    gl.attachShader(program, vertexShader)
+    gl.attachShader(program, fragmentShader)
+    gl.linkProgram(program)
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      setWebglFailed(true)
+      return undefined
+    }
+
+    const buffer = gl.createBuffer()
+    const position = gl.getAttribLocation(program, 'a_position')
+    const resolution = gl.getUniformLocation(program, 'u_resolution')
+    const time = gl.getUniformLocation(program, 'u_time')
+    const pointer = gl.getUniformLocation(program, 'u_pointer')
+    const motion = gl.getUniformLocation(program, 'u_motion')
+    if (!buffer || position < 0 || !resolution || !time || !pointer || !motion) {
+      setWebglFailed(true)
+      return undefined
+    }
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]),
+      gl.STATIC_DRAW,
+    )
+    gl.useProgram(program)
+    gl.enableVertexAttribArray(position)
+    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
+
+    const targetPointer = { x: 0.5, y: 0.5 }
+    const currentPointer = { x: 0.5, y: 0.5 }
+    const resize = () => {
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5)
+      canvas.width = Math.floor(window.innerWidth * pixelRatio)
+      canvas.height = Math.floor(window.innerHeight * pixelRatio)
+      gl.viewport(0, 0, canvas.width, canvas.height)
+    }
+    const updatePointer = (event) => {
+      targetPointer.x = event.clientX / window.innerWidth
+      targetPointer.y = 1 - event.clientY / window.innerHeight
+    }
+    const startTime = performance.now()
+    let frame = 0
+    const render = (now) => {
+      currentPointer.x += (targetPointer.x - currentPointer.x) * 0.035
+      currentPointer.y += (targetPointer.y - currentPointer.y) * 0.035
+      gl.uniform2f(resolution, canvas.width, canvas.height)
+      gl.uniform1f(time, (now - startTime) / 1000)
+      gl.uniform2f(pointer, currentPointer.x, currentPointer.y)
+      gl.uniform1f(motion, motionEnabled ? 1 : 0)
+      gl.drawArrays(gl.TRIANGLES, 0, 6)
+      if (motionEnabled) frame = requestAnimationFrame(render)
+    }
+
+    resize()
+    window.addEventListener('resize', resize)
+    window.addEventListener('pointermove', updatePointer, { passive: true })
+    setWebglFailed(false)
+    render(performance.now())
+
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('resize', resize)
+      window.removeEventListener('pointermove', updatePointer)
+      gl.deleteBuffer(buffer)
+      gl.deleteProgram(program)
+      gl.deleteShader(vertexShader)
+      gl.deleteShader(fragmentShader)
+    }
+  }, [motionEnabled])
+
   return (
-    <svg
-      className="contour-background"
+    <>
+      <canvas ref={canvasRef} className="contour-background contour-background--canvas" aria-hidden="true" />
+      <svg
+        className={`contour-background contour-background--fallback${webglFailed ? ' is-visible' : ''}`}
       viewBox="0 0 1600 1100"
       preserveAspectRatio="xMidYMid slice"
       aria-hidden="true"
@@ -120,6 +305,7 @@ export default function ContourBackground() {
           </g>
         ))}
       </g>
-    </svg>
+      </svg>
+    </>
   )
 }

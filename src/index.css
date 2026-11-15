@@ -98,20 +98,11 @@ body,
   font-weight: 700;
   line-height: 1.45;
   letter-spacing: -0.015em;
-  will-change: transform;
 }
 
-.about-line__neutral,
-.about-line__blue {
+.about-line__neutral {
   display: block;
-  clip-path: inset(0 100% 0 0);
-}
-
-.about-line__blue {
-  position: absolute;
-  inset: 0;
-  color: #437fa7;
-  pointer-events: none;
+  clip-path: inset(0 0 100% 0);
 }
 
 @media (max-width: 900px) {
@@ -144,8 +135,7 @@ body,
 
 @media (prefers-reduced-motion: reduce) {
   .about__photo-mask,
-  .about-line__neutral,
-  .about-line__blue {
+  .about-line__neutral {
     clip-path: none !important;
   }
 }

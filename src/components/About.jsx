@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 
-const BLUE = '#437FA7'
 const PHOTO_SPAN = 0.6
 const LINE_START = [0.58, 0.75]
 const LINE_DURATION = 0.3
@@ -31,17 +30,12 @@ export default function About() {
       lineRefs.current.forEach((line, index) => {
         if (!line) return
         const neutral = line.querySelector('.about-line__neutral')
-        const blue = line.querySelector('.about-line__blue')
-        if (!neutral || !blue) return
+        if (!neutral) return
 
         const lineP = clamp01((progress - LINE_START[index]) / LINE_DURATION)
         const easedP = lineP * lineP * (3 - 2 * lineP)
         const neutralP = clamp01((easedP - 0.16) / 0.84)
-        const blueP = clamp01(easedP * 1.2)
-        line.style.transform = `translate3d(${(1 - easedP) * -56}px, 0, 0)`
-        neutral.style.clipPath = `inset(0 ${(1 - neutralP) * 100}% 0 0)`
-        blue.style.clipPath = `inset(0 ${(1 - blueP) * 100}% 0 0)`
-        blue.style.opacity = String(clamp01((1 - neutralP) * 1.4))
+        neutral.style.clipPath = `inset(0 0 ${(1 - neutralP) * 100}% 0)`
       })
     }
 
@@ -103,9 +97,6 @@ export default function About() {
               className="about-line"
             >
               <span className="about-line__neutral">{text}</span>
-              <span aria-hidden="true" className="about-line__blue">
-                {text}
-              </span>
             </p>
           ))}
         </div>

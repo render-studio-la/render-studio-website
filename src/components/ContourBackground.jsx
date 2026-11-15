@@ -44,6 +44,33 @@ float fbm(vec2 point) {
   return value / 0.8704;
 }
 
+float blobField(vec2 point, float time) {
+  float value = 0.0;
+  for (int index = 0; index < 11; index += 1) {
+    float seed = float(index);
+    float phase = hash(vec2(seed + 4.0, 12.8)) * 6.283;
+    vec2 anchor = vec2(
+      mix(-0.82, 0.82, hash(vec2(seed + 1.0, 3.1))),
+      mix(-0.46, 0.46, hash(vec2(seed + 2.0, 7.7)))
+    );
+    vec2 position = anchor + vec2(
+      sin(time * (0.38 + hash(vec2(seed + 5.0, 9.2)) * 0.22) + phase) * 0.14,
+      cos(time * (0.32 + hash(vec2(seed + 6.0, 5.4)) * 0.2) + phase * 1.37) * 0.1
+    );
+
+    float lifePhase = fract(time * (0.16 + hash(vec2(seed + 8.0, 2.4)) * 0.05) + phase / 6.283);
+    float life = smoothstep(0.0, 0.16, lifePhase) * (1.0 - smoothstep(0.72, 1.0, lifePhase));
+    float radius = mix(0.16, 0.27, hash(vec2(seed + 9.0, 6.6)));
+    radius *= 0.92 + 0.12 * sin(time * 0.42 + phase);
+
+    vec2 local = (point - position) / vec2(radius, radius * (0.76 + hash(vec2(seed + 10.0, 4.8)) * 0.3));
+    local += (fbm(point * 1.25 + vec2(seed * 3.7, seed * 2.1)) - 0.5) * vec2(0.18, 0.14);
+    float influence = exp(-dot(local, local) * 1.45);
+    value += influence * life * (0.76 + hash(vec2(seed + 11.0, 8.1)) * 0.28);
+  }
+  return value;
+}
+
 void main() {
   vec2 uv = v_uv - 0.5;
   uv.x *= u_resolution.x / u_resolution.y;
@@ -53,23 +80,9 @@ void main() {
   pointer.x *= u_resolution.x / u_resolution.y;
   float pointerInfluence = exp(-dot(uv - pointer * 0.72, uv - pointer * 0.72) * 4.0);
 
-  float flowAngle = (fbm(uv * 0.38 + 9.7) - 0.5) * 6.283;
-  vec2 flow = vec2(cos(flowAngle), sin(flowAngle));
-  vec2 crossFlow = vec2(-flow.y, flow.x);
-
-  vec2 primaryMotion = flow * sin(time * 0.55);
-  vec2 crossMotion = crossFlow * sin(time * 0.35);
-
-  vec2 warped = uv;
-  warped += 0.2 * vec2(
-    fbm(uv * 0.9 + primaryMotion) - 0.5,
-    fbm(uv * 0.9 + primaryMotion + vec2(6.4, -4.1)) - 0.5
-  );
-  warped += crossFlow * (fbm(uv * 0.62 + crossMotion + 4.2) - 0.5) * 0.07;
-  warped += pointerInfluence * pointer * 0.035 * u_motion;
-
-  float field = fbm(warped * 1.05 + flow * sin(time * 0.45));
-  field += fbm(warped * 1.65 + crossFlow * sin(time * 0.28) + 3.7) * 0.12;
+  vec2 warped = uv + pointerInfluence * pointer * 0.035 * u_motion;
+  float field = blobField(warped, time);
+  field += max(fbm(warped * 0.72 + vec2(sin(time * 0.24), cos(time * 0.19))) - 0.52, 0.0) * 0.16;
   field /= 1.12;
 
   float distanceToContour = abs(fract(field * 9.75) - 0.5);
@@ -77,7 +90,7 @@ void main() {
   float contour = 1.0 - smoothstep(0.0, contourWidth, distanceToContour);
   vec3 background = vec3(0.043, 0.059, 0.063);
   vec3 lineColor = vec3(0.373, 0.573, 0.647);
-  vec3 color = mix(background, lineColor, contour * 0.2);
+  vec3 color = mix(background, lineColor, contour * 0.3);
 
   gl_FragColor = vec4(color, 1.0);
 }

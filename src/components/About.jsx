@@ -133,13 +133,15 @@ export default function About() {
     <section ref={sectionRef} className="about" aria-label="About Render Studio">
       <div className="about__inner">
         <figure className="about__media">
-          <div ref={maskRef} className="about__photo-mask">
-            <img
-              className="about__photo"
-              src="/images/about-gabriel.jpg"
-              alt="Gabriel Lira working with a camera at Dodger Stadium"
-              loading="lazy"
-            />
+          <div className="about__frame">
+            <div ref={maskRef} className="about__photo-mask">
+              <img
+                className="about__photo"
+                src="/images/about-gabriel.jpg"
+                alt="Gabriel Lira working with a camera at Dodger Stadium"
+                loading="lazy"
+              />
+            </div>
           </div>
         </figure>
         <div ref={textRef} className="about__text">

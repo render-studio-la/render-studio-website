@@ -47,8 +47,8 @@ body,
   align-items: flex-end;
   width: 100%;
   height: 100%;
-  gap: clamp(5rem, 6vw, 8rem);
-  padding: 0 5% 10% 10%;
+  gap: clamp(7.5rem, 9vw, 12rem);
+  padding: 0 5% 8% 10%;
 }
 
 .about__media {

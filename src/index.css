@@ -47,8 +47,8 @@ body,
   align-items: flex-end;
   width: 100%;
   height: 100%;
-  gap: clamp(7.5rem, 9vw, 12rem);
-  padding: 0 5% 9% 10%;
+  gap: clamp(6.375rem, 7.65vw, 10.2rem);
+  padding: 0 5% 9% 12%;
 }
 
 .about__media {
@@ -89,7 +89,7 @@ body,
 
 .about__text {
   align-self: center;
-  transform: translateY(clamp(24px, 4vh, 40px));
+  transform: translateY(clamp(40px, 5vh, 56px));
   width: 840px;
   max-width: 840px;
   flex: 0 0 840px;

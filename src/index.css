@@ -60,9 +60,9 @@ body,
   width: 510px;
   height: 642px;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 18px;
   clip-path: inset(100% 0 0 0);
-  box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 22px 34px -14px rgba(0, 0, 0, 0.6);
   transition: transform 450ms cubic-bezier(0.22, 0.61, 0.36, 1),
     box-shadow 450ms ease;
 }

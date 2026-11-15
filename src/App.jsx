@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import ContourBackground from './components/ContourBackground'
+import About from './components/About'
 
 const INTRO_SRC = '/videos/intro.webm'
 const HERO_SRC = '/videos/hero.mp4'
@@ -107,9 +108,7 @@ export default function App() {
           />
         )}
         </main>
-        <section className="background-test" aria-label="Background test">
-          <h2>BACKGROUND TEST</h2>
-        </section>
+        <About />
       </div>
     </>
   )

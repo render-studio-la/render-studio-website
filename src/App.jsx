@@ -35,6 +35,12 @@ export default function App() {
   }, [introVisible])
 
   useEffect(() => {
+    if (heroStartedRef.current) {
+      heroRef.current?.play().catch(() => {})
+    }
+  }, [heroSrc])
+
+  useEffect(() => {
     if (!introVisible) return undefined
     const intro = introRef.current
     let frame = 0

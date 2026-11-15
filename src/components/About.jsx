@@ -7,19 +7,23 @@ export default function About() {
   useEffect(() => {
     const media = mediaRef.current
     if (!media) return undefined
+    let timer = 0
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setRevealed(true)
             observer.disconnect()
+            timer = window.setTimeout(() => setRevealed(true), 450)
           }
         })
       },
-      { threshold: 0.2 },
+      { threshold: 0.35 },
     )
     observer.observe(media)
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      window.clearTimeout(timer)
+    }
   }, [])
 
   return (

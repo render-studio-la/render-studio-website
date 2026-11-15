@@ -54,6 +54,15 @@ export default function App() {
   }
 
   useEffect(() => {
+    document.documentElement.style.overflow = introVisible ? 'hidden' : ''
+    document.body.style.overflow = introVisible ? 'hidden' : ''
+    return () => {
+      document.documentElement.style.overflow = ''
+      document.body.style.overflow = ''
+    }
+  }, [introVisible])
+
+  useEffect(() => {
     let frame = 0
     const updateClip = () => {
       frame = 0

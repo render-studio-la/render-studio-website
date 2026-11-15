@@ -48,7 +48,7 @@ body,
   width: 100%;
   height: 100%;
   gap: clamp(2.5rem, 3vw, 4rem);
-  padding: 0 5% 3vw 3%;
+  padding: 0 5% 10% 10%;
 }
 
 .about__media {

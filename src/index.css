@@ -100,11 +100,6 @@ body,
   letter-spacing: -0.015em;
 }
 
-.about-line__neutral {
-  display: block;
-  clip-path: inset(0 0 100% 0);
-}
-
 @media (max-width: 900px) {
   .about {
     height: auto;
@@ -134,8 +129,7 @@ body,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .about__photo-mask,
-  .about-line__neutral {
+  .about__photo-mask {
     clip-path: none !important;
   }
 }

@@ -2,8 +2,6 @@ import { useEffect, useRef } from 'react'
 
 const PHOTO_START = 0.38
 const PHOTO_SPAN = 0.62
-const LINE_START = [0.58, 0.75]
-const LINE_DURATION = 0.3
 
 function clamp01(value) {
   return Math.min(Math.max(value, 0), 1)
@@ -12,7 +10,6 @@ function clamp01(value) {
 export default function About() {
   const sectionRef = useRef(null)
   const maskRef = useRef(null)
-  const lineRefs = useRef([])
 
   useEffect(() => {
     const section = sectionRef.current
@@ -28,16 +25,6 @@ export default function About() {
         mask.style.clipPath = `inset(${(1 - photoP) * 100}% 0 0 0)`
       }
 
-      lineRefs.current.forEach((line, index) => {
-        if (!line) return
-        const neutral = line.querySelector('.about-line__neutral')
-        if (!neutral) return
-
-        const lineP = clamp01((progress - LINE_START[index]) / LINE_DURATION)
-        const easedP = lineP * lineP * (3 - 2 * lineP)
-        const neutralP = clamp01((easedP - 0.16) / 0.84)
-        neutral.style.clipPath = `inset(0 0 ${(1 - neutralP) * 100}% 0)`
-      })
     }
 
     const update = () => {
@@ -90,15 +77,7 @@ export default function About() {
         </figure>
         <div className="about__text">
           {lines.map((text, index) => (
-            <p
-              key={index}
-              ref={(node) => {
-                lineRefs.current[index] = node
-              }}
-              className="about-line"
-            >
-              <span className="about-line__neutral">{text}</span>
-            </p>
+            <p key={index}>{text}</p>
           ))}
         </div>
       </div>

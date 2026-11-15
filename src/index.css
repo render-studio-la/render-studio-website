@@ -47,7 +47,7 @@ body,
   align-items: flex-end;
   width: 100%;
   height: 100%;
-  gap: clamp(2.5rem, 3vw, 4rem);
+  gap: clamp(5rem, 6vw, 8rem);
   padding: 0 5% 10% 10%;
 }
 
@@ -88,6 +88,7 @@ body,
 }
 
 .about__text {
+  align-self: center;
   width: 840px;
   max-width: 840px;
   flex: 0 0 840px;
@@ -96,7 +97,7 @@ body,
 .about__text p {
   position: relative;
   margin: 0 0 1.4rem;
-  font-size: 2.2rem;
+  font-size: 2.4rem;
   font-weight: 700;
   line-height: 1.3;
   letter-spacing: -0.015em;
@@ -105,6 +106,10 @@ body,
 .about-copy-line {
   display: block;
   white-space: nowrap;
+}
+
+.about-highlight {
+  color: #437fa7;
 }
 
 @media (max-width: 900px) {
@@ -117,6 +122,7 @@ body,
   .about__inner {
     flex-direction: column;
     align-items: center;
+    gap: 2.5rem;
     width: auto;
     height: auto;
     padding: 0 1.5rem;

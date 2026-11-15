@@ -59,14 +59,20 @@ export default function About() {
 
   const paragraphs = [
     [
-      'Gabriel Lira, founder of Render Studio, a ',
-      'Los Angeles-based creative company specializing ',
-      'in video production, photography, and drone cinematography.',
+      <>
+        <span className="about-highlight">Gabriel Lira</span>, founder of{' '}
+        <span className="about-highlight">Render Studio</span>, a{' '}
+      </>,
+      <>
+        <span className="about-highlight">Los Angeles</span>-based{' '}
+        <span className="about-highlight">creative</span> company specializing{' '}
+      </>,
+      <>in video production, photography, and drone <span className="about-highlight">cinematography</span>.</>,
     ],
     [
-      'With a focus on visual storytelling, Render Studio ',
-      'brings ideas to life through creative cinematography ',
-      'and thoughtful, impactful post-production.',
+      <>With a focus on visual storytelling, <span className="about-highlight">Render Studio</span>{' '}</>,
+      <>brings ideas to life through <span className="about-highlight">creative</span> cinematography{' '}</>,
+      <>and thoughtful, <span className="about-highlight">impactful</span> post-production.</>,
     ],
   ]
 
@@ -87,7 +93,7 @@ export default function About() {
           {paragraphs.map((lines, paragraphIndex) => (
             <p key={paragraphIndex}>
               {lines.map((line, lineIndex) => (
-                <span className="about-copy-line" key={line}>
+                <span className="about-copy-line" key={lineIndex}>
                   {line}
                   {lineIndex < lines.length - 1 && <br className="about-copy-break" />}
                 </span>

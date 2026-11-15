@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 
-const PHOTO_SPAN = 0.6
+const PHOTO_START = 0.38
+const PHOTO_SPAN = 0.62
 const LINE_START = [0.58, 0.75]
 const LINE_DURATION = 0.3
 
@@ -21,7 +22,7 @@ export default function About() {
     let frame = 0
 
     const applyProgress = (progress) => {
-      const photoP = clamp01(progress / PHOTO_SPAN)
+      const photoP = clamp01((progress - PHOTO_START) / PHOTO_SPAN)
       const mask = maskRef.current
       if (mask) {
         mask.style.clipPath = `inset(${(1 - photoP) * 100}% 0 0 0)`

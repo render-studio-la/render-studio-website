@@ -35,9 +35,13 @@ export default function About() {
         if (!neutral || !blue) return
 
         const lineP = clamp01((progress - LINE_START[index]) / LINE_DURATION)
-        neutral.style.clipPath = `inset(0 ${(1 - lineP) * 100}% 0 0)`
-        blue.style.clipPath = `inset(0 ${(1 - clamp01(lineP * 1.35)) * 100}% 0 0)`
-        blue.style.opacity = lineP > 0.8 ? String(clamp01((1 - lineP) / 0.2)) : '1'
+        const easedP = lineP * lineP * (3 - 2 * lineP)
+        const neutralP = clamp01((easedP - 0.16) / 0.84)
+        const blueP = clamp01(easedP * 1.2)
+        line.style.transform = `translate3d(${(1 - easedP) * -56}px, 0, 0)`
+        neutral.style.clipPath = `inset(0 ${(1 - neutralP) * 100}% 0 0)`
+        blue.style.clipPath = `inset(0 ${(1 - blueP) * 100}% 0 0)`
+        blue.style.opacity = String(clamp01((1 - neutralP) * 1.4))
       })
     }
 

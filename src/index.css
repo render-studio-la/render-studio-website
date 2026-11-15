@@ -159,7 +159,8 @@ body,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .about__photo-mask {
+  .about__photo-mask,
+  .about__text {
     clip-path: none !important;
   }
 }

@@ -4,6 +4,7 @@ import ContourBackground from './components/ContourBackground'
 const INTRO_SRC = '/videos/intro.webm'
 const HERO_SRC = '/videos/hero.mp4'
 const HERO_START_SECONDS = 3
+const HERO_OVERLAP_RATIO = 0.88
 
 function canPlayAlphaIntro() {
   const probe = document.createElement('video')
@@ -15,6 +16,7 @@ export default function App() {
   const heroRef = useRef(null)
   const heroStartedRef = useRef(false)
   const [introVisible, setIntroVisible] = useState(canPlayAlphaIntro)
+  const [introPlaying, setIntroPlaying] = useState(false)
   const [heroStarted, setHeroStarted] = useState(false)
   const [heroSrc, setHeroSrc] = useState(HERO_SRC)
 
@@ -50,10 +52,34 @@ export default function App() {
     setIntroVisible(false)
   }
 
+  useEffect(() => {
+    let frame = 0
+    const updateClip = () => {
+      frame = 0
+      const hero = heroRef.current
+      if (!hero) return
+      const maxInset = window.innerHeight * HERO_OVERLAP_RATIO
+      const inset = Math.min(Math.max(window.scrollY - 1, 0), maxInset)
+      hero.style.clipPath = inset > 0 ? `inset(0px 0px ${inset}px 0px)` : ''
+    }
+    const scheduleUpdate = () => {
+      if (!frame) frame = requestAnimationFrame(updateClip)
+    }
+    updateClip()
+    window.addEventListener('scroll', scheduleUpdate, { passive: true })
+    window.addEventListener('resize', scheduleUpdate)
+    return () => {
+      window.removeEventListener('scroll', scheduleUpdate)
+      window.removeEventListener('resize', scheduleUpdate)
+      if (frame) cancelAnimationFrame(frame)
+    }
+  }, [])
+
   return (
     <>
-      <ContourBackground />
-      <main className="stage">
+      <ContourBackground visible={!introVisible || introPlaying} />
+      <div className="scroll-stage">
+        <main className="stage">
         <video
           ref={heroRef}
           className={`layer layer--hero${heroStarted ? ' is-visible' : ''}`}
@@ -72,6 +98,7 @@ export default function App() {
             src={INTRO_SRC}
             muted
             autoPlay
+            onPlaying={() => setIntroPlaying(true)}
             playsInline
             preload="auto"
             disablePictureInPicture
@@ -79,10 +106,11 @@ export default function App() {
             onError={removeIntro}
           />
         )}
-      </main>
-      <section className="background-test" aria-label="Background test">
-        <h2>BACKGROUND TEST</h2>
-      </section>
+        </main>
+        <section className="background-test" aria-label="Background test">
+          <h2>BACKGROUND TEST</h2>
+        </section>
+      </div>
     </>
   )
 }

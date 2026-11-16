@@ -2,9 +2,19 @@ import { useEffect, useRef } from 'react'
 
 const PHOTO_START = 0.5
 const PHOTO_SPAN = 0.5
+const PHOTO_DURATION = 0.8
+const PHOTO_EASE = 2.6
+const TEXT_DELAY = 0.41
+const TEXT_DURATION = 0.8
+const TEXT_EASE = 3.4
+const TEXT_STAGGER = 0.09
 
 function clamp01(value) {
   return Math.min(Math.max(value, 0), 1)
+}
+
+function easeIn(power, t) {
+  return clamp01(t) ** power
 }
 
 export default function About() {
@@ -16,62 +26,87 @@ export default function About() {
     const section = sectionRef.current
     if (!section) return undefined
 
-    let locked = false
-    let frame = 0
-
+    const mask = maskRef.current
     const lineEls = textRef.current
       ? Array.from(textRef.current.querySelectorAll('.about-copy-line'))
       : []
 
-    const applyProgress = (progress) => {
-      const photoProgress = clamp01((progress - PHOTO_START) / PHOTO_SPAN)
-      const photoP = photoProgress ** 2.6
-      const mask = maskRef.current
+    let photoRaf = 0
+    let textRaf = 0
+    let photoStarted = false
+    let textStarted = false
+    let photoTime = 0
+    let textTime = 0
+
+    const textTrigger = PHOTO_START + PHOTO_SPAN * TEXT_DELAY
+
+    const photoTick = (now) => {
+      if (!photoStarted) return
+      const elapsed = (now - photoTime) / 1000
+      const photoP = easeIn(PHOTO_EASE, elapsed / PHOTO_DURATION)
       if (mask) {
         mask.style.clipPath = `inset(${(1 - photoP) * 100}% 0 0 0)`
       }
-
-      const count = lineEls.length
-      if (count > 0) {
-        const stagger = PHOTO_SPAN / (count + 1)
-        const lineSpan = PHOTO_SPAN - (count - 1) * stagger
-        lineEls.forEach((lineEl, index) => {
-          const lineP = clamp01(
-            (progress - (PHOTO_START + index * stagger)) / lineSpan
-          )
-          const eased = lineP ** 2.2
-          lineEl.style.clipPath = `inset(0 ${(1 - eased) * 100}% 0 0)`
-        })
+      if (elapsed < PHOTO_DURATION) {
+        photoRaf = requestAnimationFrame(photoTick)
       }
     }
 
-    const update = () => {
-      frame = 0
+    const textTick = (now) => {
+      if (!textStarted) return
+      const elapsed = (now - textTime) / 1000
+      lineEls.forEach((lineEl, index) => {
+        const lineStart = index * TEXT_STAGGER
+        const lineP = easeIn(TEXT_EASE, (elapsed - lineStart) / TEXT_DURATION)
+        lineEl.style.clipPath = `inset(0 ${(1 - lineP) * 100}% 0 0)`
+      })
+      if (elapsed < (lineEls.length - 1) * TEXT_STAGGER + TEXT_DURATION) {
+        textRaf = requestAnimationFrame(textTick)
+      }
+    }
+
+    const startPhoto = (now) => {
+      if (photoStarted) return
+      photoStarted = true
+      photoTime = now
+      photoRaf = requestAnimationFrame(photoTick)
+    }
+
+    const startText = (now) => {
+      if (textStarted) return
+      textStarted = true
+      textTime = now
+      textRaf = requestAnimationFrame(textTick)
+    }
+
+    const checkTrigger = () => {
       const rect = section.getBoundingClientRect()
       const vh = window.innerHeight
       const startOffset = vh * 0.7
       const denominator = rect.height - vh * 0.35
-      let progress =
+      const progress =
         denominator > 0 ? (startOffset - rect.top) / denominator : 1
-      progress = clamp01(progress)
 
-      if (locked && progress < 1) progress = 1
-      if (progress >= 1) locked = true
-
-      applyProgress(progress)
+      if (progress >= PHOTO_START) {
+        startPhoto(performance.now())
+      }
+      if (progress >= textTrigger) {
+        startText(performance.now())
+      }
     }
 
-    const scheduleUpdate = () => {
-      if (!frame) frame = requestAnimationFrame(update)
+    const scheduleCheck = () => {
+      if (!photoStarted || !textStarted) checkTrigger()
     }
 
-    update()
-    window.addEventListener('scroll', scheduleUpdate, { passive: true })
-    window.addEventListener('resize', scheduleUpdate)
+    checkTrigger()
+    window.addEventListener('scroll', scheduleCheck, { passive: true })
+    window.addEventListener('resize', scheduleCheck)
     return () => {
-      window.removeEventListener('scroll', scheduleUpdate)
-      window.removeEventListener('resize', scheduleUpdate)
-      if (frame) cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', scheduleCheck)
+      window.removeEventListener('resize', scheduleCheck)
+      if (photoRaf) cancelAnimationFrame(photoRaf)
+      if (textRaf) cancelAnimationFrame(textRaf)
     }
   }, [])
 
@@ -98,13 +133,15 @@ export default function About() {
     <section ref={sectionRef} className="about" aria-label="About Render Studio">
       <div className="about__inner">
         <figure className="about__media">
-          <div ref={maskRef} className="about__photo-mask">
-            <img
-              className="about__photo"
-              src="/images/about-gabriel.jpg"
-              alt="Gabriel Lira working with a camera at Dodger Stadium"
-              loading="lazy"
-            />
+          <div className="about__frame">
+            <div ref={maskRef} className="about__photo-mask">
+              <img
+                className="about__photo"
+                src="/images/about-gabriel.jpg"
+                alt="Gabriel Lira working with a camera at Dodger Stadium"
+                loading="lazy"
+              />
+            </div>
           </div>
         </figure>
         <div ref={textRef} className="about__text">
